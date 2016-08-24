@@ -1,6 +1,6 @@
 import knot from 'knot.js'
 
-export default (options = {}) => {
+const layzr = () => {
   // private
 
   let prevLoc = getLoc()
@@ -125,3 +125,5 @@ export default (options = {}) => {
     return this
   }
 }
+
+export default layzr

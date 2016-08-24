@@ -21,34 +21,54 @@ const onError = function(error) {
   })
 
   console.log(error)
-  this.emit('end')
 }
 
 // clean
 
-gulp.task('clean', () => del('dist'))
+gulp.task('clean', () => {
+  return del(
+    'dist/**.js',
+    '!dist',
+    '!dist/index.html'
+  )
+})
 
 // attribution
 
 const attribution =
 `/*!
  * Layzr.js ${ json.version } - ${ json.description }
- * Copyright (c) ${ new Date().getFullYear() } ${ json.author } - ${ json.homepage }
+ * Copyright (c) ${ new Date().getFullYear() } ${ json.author.name } - https://github.com/${ json.repository }
  * License: ${ json.license }
  */
 `
 
 // js
 
-const read = {
+const base = [
+  resolve({
+    jsnext: true,
+    main: true,
+    browser: true
+  }),
+  commonjs(),
+  babel({
+    exclude: 'node_modules/**',
+    include: 'node_modules/knot'
+  })
+]
+
+const minified = [
+  uglify()
+]
+
+const read = flag => ({
   entry: 'src/layzr.js',
   sourceMap: true,
-  plugins: [
-    resolve({ jsnext: true }),
-    babel(),
-    uglify()
-  ]
-}
+  plugins: flag
+    ? base.concat(minified)
+    : base
+})
 
 const write = {
   format: 'umd',
@@ -58,22 +78,30 @@ const write = {
 }
 
 gulp.task('js', () => {
-  return rollup
-    .rollup(read)
-    .then(bundle => {
-      // generate the bundle
-      const files = bundle.generate(write)
+  return Promise
+    .all([
+      rollup.rollup(read(false)),
+      rollup.rollup(read(true))
+    ])
+    .then(results => {
+      const files = results.map(res => res.generate(write))
 
-      // cache path to JS dist file
-      const dist = 'dist/layzr.min.js'
+      // cache path to JS dist files
+      const normal = 'dist/layzr.js'
+      const minified = 'dist/layzr.min.js'
 
-      // write the attribution
-      fs.writeFileSync(dist, attribution)
+      // write attributions
+      fs.writeFileSync(normal, attribution)
+      fs.writeFileSync(minified, attribution)
 
-      // write the JS and sourcemap
-      fs.appendFileSync(dist, files.code)
-      fs.writeFileSync('dist/maps/layzr.js.map', files.map.toString())
+      // write the sourcemap
+      fs.writeFileSync('dist/maps/layzr.js.map', files[0].map.toString())
+
+      // write JS files
+      fs.appendFileSync(normal, files[0].code)
+      fs.appendFileSync(minified, files[1].code)
     })
+    .catch(onError)
 })
 
 // server
@@ -110,15 +138,23 @@ gulp.task('server', () => sync(options))
 // watch
 
 gulp.task('watch', () => {
-  gulp.watch('src/layzr.js', ['js', reload])
+  gulp.watch('src/**/*.js', ['js', reload])
 })
 
 // build and default tasks
 
+const exists = path => {
+  try {
+    return fs.statSync(path).isDirectory()
+  } catch(error) {}
+
+  return false
+}
+
 gulp.task('build', ['clean'], () => {
   // create dist directories
-  fs.mkdirSync('dist')
-  fs.mkdirSync('dist/maps')
+  if(!exists('dist')) fs.mkdirSync('dist')
+  if(!exists('dist/maps')) fs.mkdirSync('dist/maps')
 
   // run the tasks
   gulp.start('js')

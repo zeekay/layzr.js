@@ -1,44 +1,39 @@
 {
-  "name":        "layzk.js",
-  "version":     "2.2.2",
+  "name": "layzk.js",
+  "version": "2.2.3",
   "description": "A small, fast, and modern library for lazy loading images.",
-  "homepage":    "http://callmecavs.github.io/layzr.js/",
-  "main":        "dist/layzr.min.js",
+  "homepage": "http://callmecavs.github.io/layzr.js/",
+  "main": "dist/layzr.min.js",
   "jsnext:main": "src/layzr.js",
-
-  "author":  "Michael Cavalea",
+  "author": "Michael Cavalea",
   "license": "MIT",
-
   "repository": {
     "type": "git",
-    "url":  "https://github.com/callmecavs/layzr.js.git"
+    "url": "https://github.com/callmecavs/layzr.js.git"
   },
   "bugs": {
     "url": "https://github.com/callmecavs/layzr.js/issues"
   },
-
   "keywords": [
     "images",
     "lazy",
     "load",
     "scroll"
   ],
-
   "dependencies": {
     "knot.js": "^1.1.1"
   },
-
   "devDependencies": {
-    "babel-preset-es2015-rollup":                "*",
+    "babel-preset-es2015-rollup": "*",
     "babel-plugin-transform-object-rest-spread": "*",
-    "browser-sync":                              "*",
-    "del":                                       "*",
-    "gulp":                                      "*",
-    "node-notifier":                             "*",
-    "rollup":                                    "*",
-    "rollup-plugin-babel":                       "*",
-    "rollup-plugin-commonjs":                    "*",
-    "rollup-plugin-node-resolve":                "*",
-    "rollup-plugin-uglify":                      "*"
+    "browser-sync": "*",
+    "del": "*",
+    "gulp": "*",
+    "node-notifier": "*",
+    "rollup": "*",
+    "rollup-plugin-babel": "*",
+    "rollup-plugin-commonjs": "*",
+    "rollup-plugin-node-resolve": "*",
+    "rollup-plugin-uglify": "*"
   }
 }
